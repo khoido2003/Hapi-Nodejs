@@ -1,49 +1,41 @@
 "use strict";
 
 const Hapi = require("@hapi/hapi");
+const mongoose = require("mongoose");
+
+const routes = require("./routes/index.cjs");
+const errorController = require("./controllers/error-controller.cjs");
 
 require("dotenv").config();
 
 const init = async () => {
-  // Initialize the server
   const server = Hapi.server({
     port: process.env.HAPI_PORT || 8001,
-    host: "localhost",
+    host: process.env.HAPI_HOST || "localhost",
   });
 
-  // Handle route requests
-  server.route({
-    method: "POST",
-    path: "/api/hi",
-    handler: (req, h) => {
-      console.log(req.headers);
+  // Define route here
+  server.route(routes);
 
-      // return {
-      //   id: req.query.name,
-      //   mes: "Hello, world",
-      //   body: req.payload.name,
-      //   cookie: req.state.name,
-      // };
-    },
-  });
-
-  server.ext("onPreResponse", function (req, h) {
-    if (req.response.isBoom) {
-      return h.continue;
-    }
-
-    req.response.header("vary", "x-customer-id");
-
-    return h.continue;
-  });
+  // Handle global error
+  errorController(server);
 
   await server.start();
-  console.log(`Server running on port ${process.env.HAPI_PORT}`);
+  console.log(
+    `Server running on port ${process.env.HAPI_PORT || 3000}: `,
+    server.info.uri
+  );
+
+  process.on("unhandledRejection", (error) => {
+    console.log(error);
+    process.exit(1);
+  });
 };
 
-process.on("unhandledRejection", (error) => {
-  console.log(error);
-  process.exit(1);
+// Connect to mongodb
+mongoose.connect(process.env.MONGODB_URI).then(() => {
+  console.log("MongoDB connect successfully!");
 });
 
+// Start the server
 init();
