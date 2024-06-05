@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const routes = require("./routes/index.cjs");
 const errorController = require("./controllers/error-controller.cjs");
 
+// Read .env file
 require("dotenv").config();
 
 const init = async () => {
@@ -26,6 +27,7 @@ const init = async () => {
     server.info.uri
   );
 
+  // Handle unknown error
   process.on("unhandledRejection", (error) => {
     console.log(error);
     process.exit(1);

@@ -1,23 +1,18 @@
 "use strict";
 
-const { getAllTours } = require("../controllers/tour.cjs");
+const { getAllTours, createTour } = require("../controllers/tour.cjs");
 
 const tourRoutes = [
   {
     method: "GET",
     path: "/api/v1/tours",
-    handler: (req, h) => {
-      const tours = getAllTours();
-      return tours;
-    },
+    handler: getAllTours,
   },
 
   {
     method: "POST",
     path: "/api/v1/tours",
-    handler: (req, h) => {
-      return "Hello World";
-    },
+    handler: createTour,
   },
 
   {
