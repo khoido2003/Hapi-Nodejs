@@ -3,10 +3,21 @@
 const Boom = require("@hapi/boom");
 
 const Tour = require("../models/tour.cjs");
+const APIFeatures = require("../utils/apiFeatures.cjs");
 
 exports.getAllTours = async (req, h) => {
   try {
-    const tours = await Tour.find({});
+    let filter = {};
+
+    const features = new APIFeatures(Tour.find(filter), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const tours = await features.query;
+
+    // const tours = await Tour.find({});
     return h.response(tours).code(200);
   } catch (err) {
     console.log(err);

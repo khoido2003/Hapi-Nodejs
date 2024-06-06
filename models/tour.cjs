@@ -172,14 +172,14 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "guides",
-    select: "-__v -passwordChangedAt",
-  });
+// tourSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "guides",
+//     select: "-__v -passwordChangedAt",
+//   });
 
-  next();
-});
+//   next();
+// });
 
 const Tour = mongoose.model("Tour", tourSchema);
 
