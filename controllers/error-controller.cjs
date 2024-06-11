@@ -1,15 +1,32 @@
 // const Boom = require("@hapi/boom");
 
+// Generate meaningful error messages for hapi/boom errors library
+
 const errorController = (server) => {
   server.ext("onPreResponse", (req, h) => {
     const { response } = req;
 
-    if (response.isBoom && process.env.NODE_ENV === "production") {
-      let errorMessage;
-      let statusCode;
+    let errorMessage;
+    let statusCode;
 
+    // Handle when user is not authenticated (Token is not exist in cookie or headers then this error will be triggered)
+    if (
+      response.output &&
+      response.output.payload.error === "Unauthorized" &&
+      response.output.statusCode === 401
+    ) {
+      statusCode = 401;
+      errorMessage = "You are not logged in! Please log in to view this route.";
+
+      return h.response({ statusCode, errorMessage }).code(statusCode);
+    }
+
+    ////////////////////////////////////
+
+    // PRODUCTION ERROR
+    if (response.isBoom && process.env.NODE_ENV === "production") {
       // Handle duplicate key when create new data in mongodb
-      if (response.data.error.errorResponse.code === 11000) {
+      if (response.data && response.data.error.errorResponse.code === 11000) {
         statusCode = 400;
 
         errorMessage = `Duplicate field value: ${Object.keys(response.data.error.errorResponse.keyValue)[0]}. Please use another value! `;
@@ -29,9 +46,16 @@ const errorController = (server) => {
         .code(statusCode || response.output.statusCode);
     }
 
+    ///////////////////////////////////
+
+    // DEVELOPMENT ERROR
+
+    // Return all the information of the error message in development mode
     if (response.isBoom && process.env.NODE_ENV === "development") {
-      // Return all the information of the error message in development mode
       const errorOutput = response.output.payload;
+
+      console.log(errorOutput);
+
       const errorDetails = {
         statusCode: errorOutput.statusCode,
         error: errorOutput.error,

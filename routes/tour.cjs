@@ -7,6 +7,11 @@ const tourRoutes = [
     method: "GET",
     path: "/api/v1/tours",
     handler: getAllTours,
+    options: {
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
+    },
   },
 
   {
@@ -17,7 +22,7 @@ const tourRoutes = [
 
   {
     method: "GET",
-    path: "/api/v1/top-5-tour",
+    path: "/api/v1/top-5-tours",
     handler: (req, h) => {
       return "Hello World";
     },
