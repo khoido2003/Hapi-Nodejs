@@ -16,3 +16,14 @@ exports.getAllUsers = async (req, h) => {
     throw Boom.badImplementation("Can't get all users!", { error: err });
   }
 };
+
+exports.updateMe = async (req, h) => {
+  // Not allow update user update the password in this route
+  if (req.payload.password || req.payload.passwordConfirm) {
+    return Boom.boomify(
+      new Error(
+        "This route is not for update password. Please use /updatePassword instead."
+      )
+    );
+  }
+};
