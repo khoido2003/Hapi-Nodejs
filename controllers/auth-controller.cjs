@@ -114,3 +114,16 @@ exports.logout = (req, h) => {
     });
   }
 };
+
+// Authorization based on role
+exports.restrictTo =
+  (...roles) =>
+  (req, h) => {
+    console.log();
+    if (!roles.includes(req.auth.credentials.user.role)) {
+      throw Boom.forbidden(
+        "You do not have permission to access this resource"
+      );
+    }
+    return h.continue;
+  };

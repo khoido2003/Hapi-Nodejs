@@ -12,6 +12,7 @@ const {
 } = require("../controllers/tour.cjs");
 
 const { API_PREFIX } = require("../constants/route.cjs");
+const { restrictTo } = require("../controllers/auth-controller.cjs");
 
 // Get all tours
 const tourRoutes = [
@@ -23,7 +24,7 @@ const tourRoutes = [
       // auth: {
       //   strategies: ["jwt-bearer", "jwt-cookie"],
       // },
-      // pre: [],
+      // pre: [restrictTo("user")],
     },
   },
 
@@ -39,6 +40,9 @@ const tourRoutes = [
     method: "POST",
     path: `${API_PREFIX}/tours`,
     handler: createTour,
+    options: {
+      pre: [restrictTo("admin", "lead-guide")],
+    },
   },
 
   // Delete a tour
@@ -46,6 +50,9 @@ const tourRoutes = [
     method: "DELETE",
     path: `${API_PREFIX}/tours/{id}`,
     handler: deleteTour,
+    options: {
+      pre: [restrictTo("admin", "lead-guide")],
+    },
   },
   {
     method: "PATCH",
@@ -75,6 +82,9 @@ const tourRoutes = [
     method: "GET",
     path: `${API_PREFIX}/monthly-plan/{year}`,
     handler: getMonthlyPlans,
+    options: {
+      pre: [restrictTo("admin")],
+    },
   },
 ];
 

@@ -78,7 +78,7 @@ userSchema.pre("save", async function (next) {
 });
 
 // Check if the password is changed then update the time password changed to database
-userSchema.pre("pre", function (next) {
+userSchema.pre("save", function (next) {
   if (!this.isModified() || this.isNew) return next();
 
   // Make sure the time saved in the database is the same as the time password actually changed
