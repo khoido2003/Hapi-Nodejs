@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 const routes = require("./routes/index.cjs");
 const errorController = require("./controllers/error-controller.cjs");
+const { default: User } = require("./models/user.cjs");
 
 // Read .env file
 require("dotenv").config();
@@ -72,6 +73,15 @@ const init = async () => {
       try {
         // session will contain the jwt token stored in the cookie
         const decoded = Jwt.token.decode(session);
+
+        // Find the corresponding user in the session
+        const currentUser = await User.findById(decoded.decoded.payload.id);
+
+        if (!currentUser) {
+          return {
+            isValid: false,
+          };
+        }
 
         return {
           isValid: true,

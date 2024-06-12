@@ -10,7 +10,10 @@ const errorController = (server) => {
     // console.log("===============================");
     // console.log("===============================");
     // console.log("===============================");
-    // console.log("ERROR INPUT: ", response);
+    // console.log(
+    //   "ERROR INPUT: ",
+    //   response?.data?.error?.errors?.passwordConfirm?.path
+    // );
 
     let errorMessage;
     let statusCode;
@@ -22,7 +25,7 @@ const errorController = (server) => {
       response.output.statusCode === 401
     ) {
       statusCode = 401;
-      errorMessage = "You are not logged in! Please log in to view this route.";
+      errorMessage = "You are not logged in! Please try again later.";
 
       return h.response({ statusCode, errorMessage }).code(statusCode);
     }
@@ -34,11 +37,7 @@ const errorController = (server) => {
       //
 
       // Handle duplicate key when create new data in mongodb
-      if (
-        response.data &&
-        response.data.error.errorResponse &&
-        response.data.error.errorResponse.code === 11000
-      ) {
+      if (response?.data?.error?.errorResponse?.code === 11000) {
         statusCode = 400;
 
         errorMessage = `Duplicate field value: ${Object.keys(response.data.error.errorResponse.keyValue)[0]}. Please use another value! `;
@@ -47,6 +46,11 @@ const errorController = (server) => {
       // Handle when the objectId in mongoDB is not in correct format
       if (response.data && response.data.error.kind === "ObjectId") {
         errorMessage = `Invalid ${response.data.error.path}: ${response.data.error.value}`;
+        statusCode = 400;
+      }
+
+      if (response?.data?.error?.errors?.passwordConfirm?.path) {
+        errorMessage = `password and passwordConfirm are not the same!`;
         statusCode = 400;
       }
 
