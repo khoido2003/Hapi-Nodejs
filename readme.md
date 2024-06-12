@@ -1,17 +1,5 @@
 # Hapi Node.js API Project
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-  <!-- - [Running the Application](#running-the-application) -->
-  <!-- - [API Endpoints](#api-endpoints)
-- [Authentication](#authentication)
-- [Contributing](#contributing)
-- [License](#license) -->
 
 ## Introduction
 
