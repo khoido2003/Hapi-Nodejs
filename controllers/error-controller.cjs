@@ -6,6 +6,12 @@ const errorController = (server) => {
   server.ext("onPreResponse", (req, h) => {
     const { response } = req;
 
+    // console.log("===============================");
+    // console.log("===============================");
+    // console.log("===============================");
+    // console.log("===============================");
+    // console.log("ERROR INPUT: ", response);
+
     let errorMessage;
     let statusCode;
 
@@ -25,15 +31,28 @@ const errorController = (server) => {
 
     // PRODUCTION ERROR
     if (response.isBoom && process.env.NODE_ENV === "production") {
+      //
+
       // Handle duplicate key when create new data in mongodb
-      if (response.data && response.data.error.errorResponse.code === 11000) {
+      if (
+        response.data &&
+        response.data.error.errorResponse &&
+        response.data.error.errorResponse.code === 11000
+      ) {
         statusCode = 400;
 
         errorMessage = `Duplicate field value: ${Object.keys(response.data.error.errorResponse.keyValue)[0]}. Please use another value! `;
       }
 
+      // Handle when the objectId in mongoDB is not in correct format
+      if (response.data && response.data.error.kind === "ObjectId") {
+        errorMessage = `Invalid ${response.data.error.path}: ${response.data.error.value}`;
+        statusCode = 400;
+      }
+
       // Only return the generic error message in production
       const errorOutput = response.output.payload;
+
       const errorDetails = {
         statusCode: statusCode || errorOutput.statusCode,
         error: errorOutput.error,
