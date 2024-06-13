@@ -25,7 +25,8 @@ const errorController = (server) => {
       response.output.statusCode === 401
     ) {
       statusCode = 401;
-      errorMessage = "You are not logged in! Please try again later.";
+      errorMessage =
+        "You are not logged in! Check your email or password again or your session has expired.";
 
       return h.response({ statusCode, errorMessage }).code(statusCode);
     }

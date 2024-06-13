@@ -18,7 +18,9 @@
     "prettier/prettier": "off",
     "arrow-body-style": "off",
     "prefer-const": "off",
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": "off",
+    "no-unsafe-optional-chaining": "off",
+    "no-nonoctal-decimal-escape": "off"
   },
   "parserOptions": {
     "ecmaVersion": 2020

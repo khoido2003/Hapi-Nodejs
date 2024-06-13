@@ -8,16 +8,27 @@ const {
   forgotPassword,
   resetPassword,
   updatePassword,
+  restrictTo,
 } = require("../controllers/auth-controller.cjs");
-const { getAllUsers } = require("../controllers/user.cjs");
+
+const {
+  getAllUsers,
+  updateMe,
+  deleteMe,
+  getMe,
+} = require("../controllers/user.cjs");
 
 const userRoutes = [
   {
     method: "GET",
     path: `${API_PREFIX}/users`,
     handler: getAllUsers,
+
     options: {
-      auth: false,
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
+      pre: [restrictTo("admin")],
     },
   },
 
@@ -66,9 +77,6 @@ const userRoutes = [
     method: "POST",
     path: `${API_PREFIX}/resetPassword/{token}`,
     handler: resetPassword,
-    options: {
-      auth: false,
-    },
   },
 
   // Update password
@@ -76,8 +84,41 @@ const userRoutes = [
     method: "PATCH",
     path: `${API_PREFIX}/updatePassword/{id}`,
     handler: updatePassword,
+  },
+
+  // Get current user information
+  {
+    method: "GET",
+    path: `${API_PREFIX}/getMe`,
+    handler: getMe,
     options: {
-      auth: false,
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
+    },
+  },
+
+  // Update user information
+  {
+    method: "PATCH",
+    path: `${API_PREFIX}/updateMe`,
+    handler: updateMe,
+    options: {
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
+    },
+  },
+
+  // Delete current user account
+  {
+    method: "PATCH",
+    path: `${API_PREFIX}/deleteMe`,
+    handler: deleteMe,
+    options: {
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
     },
   },
 ];

@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const routes = require("./routes/index.cjs");
 const errorController = require("./controllers/error-controller.cjs");
-const { default: User } = require("./models/user.cjs");
+const User = require("./models/user.cjs");
 
 // Read .env file
 require("dotenv").config();
@@ -16,6 +16,11 @@ const init = async () => {
   const server = Hapi.server({
     port: process.env.HAPI_PORT || 8001,
     host: process.env.HAPI_HOST || "localhost",
+    routes: {
+      cors: {
+        origin: ["*"],
+      },
+    },
   });
 
   /////////////////////////////////////////////////////
@@ -45,16 +50,31 @@ const init = async () => {
       sub: false,
       nbf: true,
       exp: true,
-      maxAgeSec: 14400, // 4 hours
-      timeSkewSec: 15,
+      // maxAgeSec: 14400, // this only allow the token to be 4 hours old but the token set in this project is 90 days old so if this turn on then the bearer validation will always be fail even if the token is valid and not expired
+      // timeSkewSec: 15,
     },
-    validate: (artifacts, req, h) => {
-      return {
-        isValid: true,
-        credential: {
-          user: artifacts.decoded.payload,
-        },
-      };
+    validate: async (artifacts, req, h) => {
+      try {
+        const currentUser = await User.findById(artifacts.decoded.payload.id);
+
+        // If the user have disabled the account (active === false) then we will not allow them to access the account with the current session token
+        if (!currentUser) {
+          return {
+            isValid: false,
+          };
+        }
+
+        return {
+          isValid: true,
+          credential: {
+            user: artifacts.decoded.payload,
+          },
+        };
+      } catch (err) {
+        return {
+          isValid: false,
+        };
+      }
     },
   });
 
@@ -74,7 +94,9 @@ const init = async () => {
         // session will contain the jwt token stored in the cookie
         const decoded = Jwt.token.decode(session);
 
-        // Find the corresponding user in the session
+        // // Find the corresponding user in the session
+
+        // If the user have disabled the account (active === false) then we will not allow them to access the account with the current session token
         const currentUser = await User.findById(decoded.decoded.payload.id);
 
         if (!currentUser) {

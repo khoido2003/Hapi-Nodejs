@@ -21,6 +21,7 @@ const tourRoutes = [
     path: `${API_PREFIX}/tours`,
     handler: getAllTours,
     options: {
+      // auth: false,
       // auth: {
       //   strategies: ["jwt-bearer", "jwt-cookie"],
       // },
@@ -41,6 +42,9 @@ const tourRoutes = [
     path: `${API_PREFIX}/tours`,
     handler: createTour,
     options: {
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
       pre: [restrictTo("admin", "lead-guide")],
     },
   },
@@ -51,6 +55,9 @@ const tourRoutes = [
     path: `${API_PREFIX}/tours/{id}`,
     handler: deleteTour,
     options: {
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
       pre: [restrictTo("admin", "lead-guide")],
     },
   },
@@ -83,6 +90,9 @@ const tourRoutes = [
     path: `${API_PREFIX}/monthly-plan/{year}`,
     handler: getMonthlyPlans,
     options: {
+      auth: {
+        strategies: ["jwt-bearer", "jwt-cookie"],
+      },
       pre: [restrictTo("admin")],
     },
   },
