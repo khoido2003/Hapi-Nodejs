@@ -73,7 +73,8 @@ const tourRoutes = [
     path: `${API_PREFIX}/top-5-tours`,
     handler: getAllTours,
     options: {
-      pre: [topToursAlias],
+      // Need callback function
+      pre: [topToursAlias, restrictTo("admin", "lead-guide")],
     },
   },
 
